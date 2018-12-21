@@ -12,8 +12,81 @@ material type and length to accound for natural wire resitance
 
 public class WireComponent
 {
-	public static double resistance;									//self explanatory
-	public static double voltage;										//yep
+	public double resistance = 0;											//self explanatory
+	public static double voltage = 0;										//yep
 
-	public static int 
+
+	//these are slighttly different than a normal approach
+	//for the math to work out when you try to access this 
+	//wire component from w (negative) terminal it will give
+	//negative values for volatage and current dependant 
+	//voltage
+	public static int v;												//from positive 
+	public static int w;												//to negative
+
+
+	//init as a resistance and voltage component!
+	public WireComponent(int vee, int doubleu, double r, double vol)
+	{
+		v = vee;
+		w = doubleu;
+		resistance = r;
+		voltage = vol;
+	}
+
+	//init as just a resistive component
+	public WireComponent(int vee, int doubleu, double r)
+	{
+		v = vee;
+		w = doubleu;
+		resistance = r;
+	}
+
+	//init as a voltage source
+	public WireComponent(int vee, int doubleu, double vol )
+	{
+		v = vee;
+		w = doubleu;
+		voltage = vol;
+	}
+
+	//init as just a wire
+	public WireComponent(int vee, int doubleu)
+	{
+		v = vee;
+		w = doubleu;
+	}
+
+	//this method will return a double array of length 2
+	//containing at index 0 the voltage of the component
+	//at index 1 the resistive coefficent.  It will be negative or
+	//positive of what is stored dependanct on which terminal this 
+	//is being accessed from
+	public double[] currentFlowInfo(int accessTerminal) 
+	{
+		if (accessTerminal != v || accessTerminal != w) 
+		{
+			throw new UnsupportedArgumentException("This component is not connected to node: " + accessTerminal);
+		}
+
+		//accessing from positive terminal
+		if (accessTerminal == v)
+		{
+			double[] ret = {voltage, resistance};
+			return ret;
+		}
+		else
+		{
+			double[] ret = {-voltage, -resistance};
+			return ret;
+		}
+	}
+
+	//some getters, pretty self explanatory
+	public double resistance(){return resistance;}
+	public double voltage(){return voltage;}
+	public boolean isPlainWire(){return (voltage == 0 && resistance == 0);}
+
+
+
 }
