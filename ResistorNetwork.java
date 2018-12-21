@@ -9,6 +9,7 @@ edges will be WireComponent objects.
 ********************************************************************************/
 import java.util.ArrayList;
 
+@SuppressWarnings("unchecked")
 public class ResistorNetwork
 {
 	/****************************************
@@ -42,18 +43,36 @@ public class ResistorNetwork
 	}
 
 	//copy the given resistor network 
+	//adds edges with edge id of the number of edges in this
 	public ResistorNetwork(ResistorNetwork network)
 	{
 		this.V = network.V();
 		this.E = 0;
 
-		adjTo = (ArrayList<WireComponent>[]) new ArrayList()[V];
+		adjTo = (ArrayList<WireComponent>[]) new ArrayList[V];
 		for (int i = 0; i < V; i++)
 		{
 			adjTo[i] = new ArrayList<WireComponent>();
 		}
 
-		
+		//now to copy over edges and make new ones!
+		for (int i = 0; i < V; i++)
+		{
+			Iterable<WireComponent> toIterate = network.connectedTo(i);
+
+			for (WireComponent wire: toIterate)
+			{
+				int v = wire.from();
+				int w = wire.to();
+
+				double resistance = wire.resistance();
+				double voltage = wire.voltage();
+
+				WireComponent toAdd = new WireComponent(v,w,resistance, voltage, this.E());
+
+				this.addComponent(toAdd);
+			}
+		}
 	}
 
 
@@ -61,7 +80,7 @@ public class ResistorNetwork
 				Getters n Setters
 	*******************************************/
 	//returns the components which this node is connected to
-	public Iterator connectedTo(int v)
+	public Iterable<WireComponent> connectedTo(int v)
 	{
 		verifyVertex(v);
 		return adjTo[v];
@@ -69,6 +88,7 @@ public class ResistorNetwork
 
 	public int V(){return this.V;}
 	public int E(){return this.E;}
+
 
 
 	/**********************************
@@ -86,7 +106,7 @@ public class ResistorNetwork
 		adjTo[component.from()].add(component);
 		adjTo[component.to()].add(component);
 
-		if(compoent.isSource())
+		if(component.isSource())
 		{
 			sources.add(component);
 		}
@@ -96,6 +116,33 @@ public class ResistorNetwork
 		}
 
 	}
+
+	public void turnToShort(WireComponent component)
+	{
+		verifyVertex(component.to());
+		verifyVertex(component.from());
+
+		//this will be reduntant, get ready
+		Iterable<WireComponent> to = adjTo[component.to()];
+		Iterable<WireComponent> from = adjTo[component.from()];
+
+		for (WireComponent wire : to)
+		{
+			if (wire.ID() == component.ID())
+			{
+				wire.toShort();
+			}
+		}
+		for (WireComponent wire : from)
+		{
+			if (wire.ID() == component.ID())
+			{
+				wire.toShort();
+			}
+		}
+	}
+
+	//to turn one of the components inta 
 
 	/**************************************
 		    Helpers and Weird Shit

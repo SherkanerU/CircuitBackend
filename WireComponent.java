@@ -9,12 +9,13 @@ components like inductors and capacitors!
 I'm also considering adding a special characteristics for 
 material type and length to accound for natural wire resitance
 ***************************************************************/
+import java.lang.*;
 
 public class WireComponent
 {
 	private double resistance = 0;											//self explanatory
-	private double double voltage = 0;										//yep
-	private boolean isSource; 
+	private double voltage = 0;												//yep
+	private int ID;															//keep track of the id on the component
 
 	//ought to be zero upon construction no matter what
 	public double calculatedVoltage = 0;									//allows for the voltage to be a running tally for superposition
@@ -30,37 +31,43 @@ public class WireComponent
 
 
 	//init as a resistance and voltage component!
-	public WireComponent(int vee, int doubleu, double r, double vol)
+	public WireComponent(int vee, int doubleu, double r, double vol, int id)
 	{
 		v = vee;
 		w = doubleu;
 		resistance = r;
 		voltage = vol;
-		isSource = true;
 	}
 
 	//init as just a resistive component
-	public WireComponent(int vee, int doubleu, double r)
+	public WireComponent(int vee, int doubleu, double r, String type, int id)
 	{
-		v = vee;
-		w = doubleu;
-		resistance = r;
-	}
-
-	//init as a voltage source
-	public WireComponent(int vee, int doubleu, double vol )
-	{
-		v = vee;
-		w = doubleu;
-		voltage = vol;
-		isSource = true;
+		if(type.equals("resistor"))
+		{
+			v = vee;
+			w = doubleu;
+			resistance = r;
+			ID = id;
+		}
+		else if (type.equals("voltage"))
+		{
+			v = vee;
+			w = doubleu;
+			voltage = r;
+			ID = id;
+		}
+		else
+		{
+			throw new IllegalStateException("initialize as either voltage or resistor");
+		}
 	}
 
 	//init as just a wire
-	public WireComponent(int vee, int doubleu)
+	public WireComponent(int vee, int doubleu, int id)
 	{
 		v = vee;
 		w = doubleu;
+		ID = id;
 	}
 
 	//this method will return a double array of length 2
@@ -72,7 +79,7 @@ public class WireComponent
 	{
 		if (accessTerminal != v || accessTerminal != w) 
 		{
-			throw new UnsupportedArgumentException("This component is not connected to node: " + accessTerminal);
+			throw new IllegalArgumentException("This component is not connected to node: " + accessTerminal);
 		}
 
 		//accessing from positive terminal
@@ -96,12 +103,20 @@ public class WireComponent
 	public int to(){return w;}
 	public int positive(){return this.from();}
 	public int negative(){return this.to();}
-	public boolean isSource(){return isSource;}
+	public boolean isSource(){return voltage != 0;}
 	public double calculatedVoltage(){return calculatedVoltage;}
+	public int ID(){return ID;}
+
+	//turn this into a short
+	public void toShort()
+	{
+		resistance = 0;
+		voltage = 0;
+	}
 
 	public String toString()
 	{
-		return "pos terminal " + v ", neg terminal " + w + ".  With voltage gen" 
+		return "pos terminal " + v + ", neg terminal " + w + ".  With voltage: " +  voltage + " and resistance: " + resistance;
 	}
 
 }
