@@ -12,8 +12,12 @@ material type and length to accound for natural wire resitance
 
 public class WireComponent
 {
-	public double resistance = 0;											//self explanatory
-	public static double voltage = 0;										//yep
+	private double resistance = 0;											//self explanatory
+	private double double voltage = 0;										//yep
+	private boolean isSource; 
+
+	//ought to be zero upon construction no matter what
+	public double calculatedVoltage = 0;									//allows for the voltage to be a running tally for superposition
 
 
 	//these are slighttly different than a normal approach
@@ -32,6 +36,7 @@ public class WireComponent
 		w = doubleu;
 		resistance = r;
 		voltage = vol;
+		isSource = true;
 	}
 
 	//init as just a resistive component
@@ -48,6 +53,7 @@ public class WireComponent
 		v = vee;
 		w = doubleu;
 		voltage = vol;
+		isSource = true;
 	}
 
 	//init as just a wire
@@ -86,7 +92,16 @@ public class WireComponent
 	public double resistance(){return resistance;}
 	public double voltage(){return voltage;}
 	public boolean isPlainWire(){return (voltage == 0 && resistance == 0);}
+	public int from(){return v;}
+	public int to(){return w;}
+	public int positive(){return this.from();}
+	public int negative(){return this.to();}
+	public boolean isSource(){return isSource;}
+	public double calculatedVoltage(){return calculatedVoltage;}
 
-
+	public String toString()
+	{
+		return "pos terminal " + v ", neg terminal " + w + ".  With voltage gen" 
+	}
 
 }
