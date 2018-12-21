@@ -1,0 +1,19 @@
+/**************************************************************
+each one of these objects will represent some piece of wire
+for now it will only be able to represent some sort of voltage 
+source and some resistance.  So resistive sources can be modeled
+as well as ideal motive sources and ideal resistors.  The first
+new stuff to come would be current souces then other linear 
+components like inductors and capacitors!
+
+I'm also considering adding a special characteristics for 
+material type and length to accound for natural wire resitance
+***************************************************************/
+
+public class WireComponent
+{
+	public static double resistance;									//self explanatory
+	public static double voltage;										//yep
+
+	public static int 
+}
